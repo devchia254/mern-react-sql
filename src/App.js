@@ -1,5 +1,10 @@
 import React, { Component } from "react";
+import Table from "./components/Table";
 import "./App.css";
+
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
 
 class App extends Component {
   state = {
@@ -23,12 +28,6 @@ class App extends Component {
       .catch(err => console.error(err));
   };
 
-  renderProduct = ({ product_id, name, price }) => (
-    <div key={product_id}>
-      {name} {price}
-    </div>
-  );
-
   addProduct = () => {
     const { product } = this.state;
     fetch(
@@ -43,22 +42,36 @@ class App extends Component {
 
     return (
       <div className="App">
-        {products.map(this.renderProduct)}
-        <div>
-          <input
-            value={product.name}
-            onChange={e =>
-              this.setState({ product: { ...product, name: e.target.value } })
-            }
-          />
-          <input
-            value={product.price}
-            onChange={e =>
-              this.setState({ product: { ...product, price: e.target.value } })
-            }
-          />
-          <button onClick={this.addProduct}>Add product</button>
-        </div>
+        <Container>
+          <Row>
+            <Col></Col>
+            <Col xs={8}>
+              <Table products={products} />
+              <div>
+                <input
+                  name="name"
+                  value={product.name}
+                  onChange={e =>
+                    this.setState({
+                      product: { ...product, name: e.target.value }
+                    })
+                  }
+                />
+                <input
+                  name="price"
+                  value={product.price}
+                  onChange={e =>
+                    this.setState({
+                      product: { ...product, price: e.target.value }
+                    })
+                  }
+                />
+                <button onClick={this.addProduct}>Add product</button>
+              </div>
+            </Col>
+            <Col></Col>
+          </Row>
+        </Container>
       </div>
     );
   }
