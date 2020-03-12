@@ -37,6 +37,13 @@ class App extends Component {
       .catch(err => console.error(err));
   };
 
+  handleChange = e => {
+    const { product } = this.state;
+    this.setState({
+      product: { ...product, [e.target.name]: e.target.value }
+    });
+  };
+
   render() {
     const { products, product } = this.state;
 
@@ -51,20 +58,12 @@ class App extends Component {
                 <input
                   name="name"
                   value={product.name}
-                  onChange={e =>
-                    this.setState({
-                      product: { ...product, name: e.target.value }
-                    })
-                  }
+                  onChange={this.handleChange}
                 />
                 <input
                   name="price"
                   value={product.price}
-                  onChange={e =>
-                    this.setState({
-                      product: { ...product, price: e.target.value }
-                    })
-                  }
+                  onChange={this.handleChange}
                 />
                 <button onClick={this.addProduct}>Add product</button>
               </div>
