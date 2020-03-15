@@ -7,13 +7,16 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 
 class App extends Component {
-  state = {
-    products: [],
-    product: {
-      name: "sample product",
-      price: 20
-    }
-  };
+  constructor() {
+    super();
+    this.state = {
+      products: [],
+      product: {
+        name: "sample product",
+        price: 20
+      }
+    };
+  }
 
   componentDidMount() {
     this.getProducts();
@@ -28,13 +31,31 @@ class App extends Component {
       .catch(err => console.error(err));
   };
 
-  addProduct = () => {
+  addProduct = e => {
+    e.preventDefault();
     const { product } = this.state;
-    fetch(
-      `http://localhost:4000/products/add?name=${product.name}&price=${product.price}`
-    )
-      .then(this.getProducts)
-      .catch(err => console.error(err));
+    // fetch(
+    //   `http://localhost:4000/products/add?name=${product.name}&price=${product.price}`
+    // )
+    fetch(`http://localhost:4000/products/add`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: product.name,
+        price: product.price
+      })
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Success:", data);
+      })
+      .catch(error => {
+        console.error("Stupid Error:", error);
+      });
+    // .then(this.getProducts)
+    // .catch(err => console.error(err));
+
+    // console.log(product);
   };
 
   handleChange = e => {
@@ -42,6 +63,7 @@ class App extends Component {
     this.setState({
       product: { ...product, [e.target.name]: e.target.value }
     });
+    // console.log("State product: ", product);
   };
 
   render() {
@@ -54,7 +76,7 @@ class App extends Component {
             <Col></Col>
             <Col xs={8}>
               <Table products={products} />
-              <div>
+              <form onSubmit={this.addProduct}>
                 <input
                   name="name"
                   value={product.name}
@@ -65,8 +87,8 @@ class App extends Component {
                   value={product.price}
                   onChange={this.handleChange}
                 />
-                <button onClick={this.addProduct}>Add product</button>
-              </div>
+                <button type="submit">Add product</button>
+              </form>
             </Col>
             <Col></Col>
           </Row>
