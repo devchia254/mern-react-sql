@@ -27,16 +27,15 @@ class App extends Component {
     fetch("http://localhost:4000/products")
       .then(response => response.json())
       .then(response => this.setState({ products: response.dataBaby }))
-      // .then(data => console.log(data)) Testing whether data is fetched
-      .catch(err => console.error(err));
+      .catch(err => console.error("Error with fetching GET: ", err));
+    // .then(data => console.log("GET results: ", data)) // Testing whether data is fetched
   };
 
   addProduct = e => {
     e.preventDefault();
+
     const { product } = this.state;
-    // fetch(
-    //   `http://localhost:4000/products/add?name=${product.name}&price=${product.price}`
-    // )
+
     fetch(`http://localhost:4000/products/add`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,17 +44,8 @@ class App extends Component {
         price: product.price
       })
     })
-      .then(response => response.json())
-      .then(data => {
-        console.log("Success:", data);
-      })
-      .catch(error => {
-        console.error("Stupid Error:", error);
-      });
-    // .then(this.getProducts)
-    // .catch(err => console.error(err));
-
-    // console.log(product);
+      .then(this.getProducts)
+      .catch(error => console.error("Error with fetching POST:", error));
   };
 
   handleChange = e => {
