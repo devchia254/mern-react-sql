@@ -1,4 +1,6 @@
 import React from "react";
+import DarkTable from "react-bootstrap/Table";
+import Button from "react-bootstrap/Button";
 
 function Table(props) {
   const { products } = props;
@@ -8,22 +10,25 @@ function Table(props) {
       <td>{product_id}</td>
       <td>{name}</td>
       <td>{price}</td>
+      <td>
+        <Button variant="success">Edit</Button>
+        <Button variant="danger">Delete</Button>
+      </td>
     </tr>
   );
 
   return (
-    <div>
-      <table className="table table-dark table-striped">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-          </tr>
-        </thead>
-        <tbody>{products.map(renderProducts)}</tbody>
-      </table>
-    </div>
+    <DarkTable striped bordered hover variant="dark">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>{products.map(renderProducts)}</tbody>
+    </DarkTable>
   );
 }
 

@@ -13,8 +13,8 @@ class App extends Component {
       products: [],
       product: {
         name: "sample product",
-        price: 20
-      }
+        price: 20,
+      },
     };
   }
 
@@ -25,33 +25,45 @@ class App extends Component {
   // This function fetches data from the server then stores it in the state "products"
   getProducts = () => {
     fetch("http://localhost:4000/products")
-      .then(response => response.json())
-      .then(response => this.setState({ products: response.dataBaby }))
-      .catch(err => console.error("Error with fetching GET: ", err));
+      .then((response) => {
+        // console.log("getProducts function: ", response);
+        return response.json();
+      })
+      .then((response) => this.setState({ products: response.dataBaby }))
+      .catch((err) => console.error("Error with fetching GET: ", err));
     // .then(data => console.log("GET results: ", data)) // Testing whether data is fetched
   };
 
-  addProduct = e => {
+  addProduct = (e) => {
     e.preventDefault();
 
     const { product } = this.state;
 
-    fetch(`http://localhost:4000/products/add`, {
+    const formData = new URLSearchParams({
+      name: product.name,
+      price: product.price,
+    });
+
+    fetch("http://localhost:4000/products/add", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: product.name,
-        price: product.price
-      })
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: formData,
     })
-      .then(this.getProducts)
-      .catch(error => console.error("Error with fetching POST:", error));
+      .then((response) => response.text())
+      // console.log("addProduct function: ", response);
+      // .then((text) => console.log(text))
+      .catch((error) =>
+        console.error(`Error with addProduct function : ${error}`)
+      )
+      .then(this.getProducts());
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     const { product } = this.state;
     this.setState({
-      product: { ...product, [e.target.name]: e.target.value }
+      product: { ...product, [e.target.name]: e.target.value },
     });
     // console.log("State product: ", product);
   };
