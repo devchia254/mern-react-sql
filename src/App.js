@@ -60,6 +60,29 @@ class App extends Component {
       .then(this.getProducts());
   };
 
+  deleteProduct = (id, e) => {
+    const { products } = this.state;
+
+    const updateProducts = products.filter(
+      (product, i, arr) => product.product_id !== id
+    );
+
+    // console.log(updateProducts);
+
+    if (window.confirm("Are you sure?")) {
+      this.setState({ products: updateProducts });
+
+      fetch(`http://localhost:4000/products/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => response.text())
+        // .then((text) => console.log(text))
+        .catch((error) =>
+          console.error(`Error with deleteProduct function : ${error}`)
+        );
+    }
+  };
+
   handleChange = (e) => {
     const { product } = this.state;
     this.setState({
@@ -77,7 +100,7 @@ class App extends Component {
           <Row>
             <Col></Col>
             <Col xs={8}>
-              <Table products={products} />
+              <Table products={products} deleteProduct={this.deleteProduct} />
               <form onSubmit={this.addProduct}>
                 <input
                   name="name"

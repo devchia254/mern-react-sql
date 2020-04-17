@@ -3,7 +3,7 @@ import DarkTable from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
 function Table(props) {
-  const { products } = props;
+  const { products, deleteProduct } = props;
 
   const renderProducts = ({ product_id, name, price }) => (
     <tr key={product_id}>
@@ -12,7 +12,9 @@ function Table(props) {
       <td>{price}</td>
       <td>
         <Button variant="success">Edit</Button>
-        <Button variant="danger">Delete</Button>
+        <Button variant="danger" onClick={(e) => deleteProduct(product_id, e)}>
+          Delete
+        </Button>
       </td>
     </tr>
   );
