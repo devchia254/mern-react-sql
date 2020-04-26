@@ -1,17 +1,26 @@
 import React from "react";
+import EditModal from "./EditModal.js";
+
+// Bootstrap components
 import DarkTable from "react-bootstrap/Table";
 import Button from "react-bootstrap/Button";
 
 function Table(props) {
-  const { products, deleteProduct } = props;
+  const { products, deleteProduct, submitEdit } = props;
 
-  const renderProducts = ({ product_id, name, price }) => (
+  const renderProducts = ({ product_id, name, price }, row_no) => (
     <tr key={product_id}>
-      <td>{product_id}</td>
+      <td>{row_no + 1}</td>
       <td>{name}</td>
       <td>{price}</td>
       <td>
-        <Button variant="success">Edit</Button>
+        <EditModal
+          stateProducts={products}
+          product_id={product_id}
+          name={name}
+          price={price}
+          submitEdit={submitEdit}
+        />
         <Button variant="danger" onClick={(e) => deleteProduct(product_id, e)}>
           Delete
         </Button>
@@ -23,7 +32,7 @@ function Table(props) {
     <DarkTable striped bordered hover variant="dark">
       <thead>
         <tr>
-          <th>ID</th>
+          <th>No.</th>
           <th>Name</th>
           <th>Price</th>
           <th>Action</th>

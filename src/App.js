@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Table from "./components/Table";
+import ProductForm from "./components/ProductForm";
 import "./App.css";
 
 import Container from "react-bootstrap/Container";
@@ -12,8 +13,9 @@ class App extends Component {
     this.state = {
       products: [],
       product: {
-        name: "sample product",
-        price: 20,
+        id: null,
+        name: "",
+        price: "",
       },
     };
   }
@@ -26,10 +28,13 @@ class App extends Component {
   getProducts = () => {
     fetch("http://localhost:4000/products")
       .then((response) => {
-        // console.log("getProducts function: ", response);
         return response.json();
       })
-      .then((response) => this.setState({ products: response.dataBaby }))
+      .then((response) => {
+        const jsonData = response.dataBaby;
+
+        this.setState({ products: jsonData });
+      })
       .catch((err) => console.error("Error with fetching GET: ", err));
     // .then(data => console.log("GET results: ", data)) // Testing whether data is fetched
   };
@@ -39,17 +44,20 @@ class App extends Component {
 
     const { product } = this.state;
 
-    const formData = new URLSearchParams({
+    const addDetails = {
+      id: product.product_id,
       name: product.name,
       price: product.price,
-    });
+    };
+
+    const postData = new URLSearchParams(addDetails);
 
     fetch("http://localhost:4000/products/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
-      body: formData,
+      body: postData,
     })
       .then((response) => response.text())
       // console.log("addProduct function: ", response);
@@ -57,7 +65,9 @@ class App extends Component {
       .catch((error) =>
         console.error(`Error with addProduct function : ${error}`)
       )
-      .then(this.getProducts());
+      .then(
+        this.setState({ products: [...this.state.products, { ...addDetails }] })
+      );
   };
 
   deleteProduct = (id, e) => {
@@ -83,6 +93,51 @@ class App extends Component {
     }
   };
 
+  submitEdit = (id, editName, editPrice, closeModal) => {
+    // console.log("id: ", id);
+    // console.log("editName: ", editName);
+    // console.log("editPrice: ", editPrice);
+
+    const { products } = this.state;
+
+    const stateProducts = [...products];
+
+    const editDetails = {
+      name: editName,
+      price: editPrice,
+    };
+
+    const filterEdit = stateProducts.map((product) => {
+      if (id === product.product_id) {
+        // This object copies the properties of every product and replaces the values of the properties from editDetails
+        return {
+          ...product,
+          ...editDetails,
+        };
+      }
+      return product;
+    });
+
+    // console.log(filterEdit);
+
+    this.setState({ products: filterEdit });
+
+    const putData = new URLSearchParams(editDetails);
+
+    fetch(`http://localhost:4000/products/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: putData,
+    })
+      .then((response) => response.text())
+      .catch((error) =>
+        console.error(`Error with onSubmitEdit function : ${error}`)
+      )
+      .then(closeModal);
+  };
+
   handleChange = (e) => {
     const { product } = this.state;
     this.setState({
@@ -94,26 +149,25 @@ class App extends Component {
   render() {
     const { products, product } = this.state;
 
+    // console.log(products);
+
     return (
       <div className="App">
         <Container>
           <Row>
             <Col></Col>
             <Col xs={8}>
-              <Table products={products} deleteProduct={this.deleteProduct} />
-              <form onSubmit={this.addProduct}>
-                <input
-                  name="name"
-                  value={product.name}
-                  onChange={this.handleChange}
-                />
-                <input
-                  name="price"
-                  value={product.price}
-                  onChange={this.handleChange}
-                />
-                <button type="submit">Add product</button>
-              </form>
+              <Table
+                products={products}
+                deleteProduct={this.deleteProduct}
+                getProducts={this.getProducts}
+                submitEdit={this.submitEdit}
+              />
+              <ProductForm
+                addProduct={this.addProduct}
+                handleChange={this.handleChange}
+                product={product}
+              />
             </Col>
             <Col></Col>
           </Row>
