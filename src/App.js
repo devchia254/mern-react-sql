@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import Table from "./components/Table";
-import ProductForm from "./components/ProductForm";
+import Table from "./components/Table/Table.js";
+import ProductForm from "./components/Form/ProductForm.js";
 import "./App.css";
 
 import Container from "react-bootstrap/Container";
@@ -36,7 +36,6 @@ class App extends Component {
         this.setState({ products: jsonData });
       })
       .catch((err) => console.error("Error with fetching GET: ", err));
-    // .then(data => console.log("GET results: ", data)) // Testing whether data is fetched
   };
 
   addProduct = (e) => {
@@ -50,9 +49,11 @@ class App extends Component {
       price: product.price,
     };
 
+    console.log(addDetails);
+
     const postData = new URLSearchParams(addDetails);
 
-    fetch("http://localhost:4000/products/add", {
+    fetch("http://localhost:4000/products/", {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -60,13 +61,12 @@ class App extends Component {
       body: postData,
     })
       .then((response) => response.text())
-      // console.log("addProduct function: ", response);
-      // .then((text) => console.log(text))
       .catch((error) =>
         console.error(`Error with addProduct function : ${error}`)
       )
       .then(
-        this.setState({ products: [...this.state.products, { ...addDetails }] })
+        // this.setState({ products: [...this.state.products, { ...addDetails }] })
+        this.getProducts()
       );
   };
 
@@ -77,8 +77,6 @@ class App extends Component {
       (product, i, arr) => product.product_id !== id
     );
 
-    // console.log(updateProducts);
-
     if (window.confirm("Are you sure?")) {
       this.setState({ products: updateProducts });
 
@@ -86,18 +84,13 @@ class App extends Component {
         method: "DELETE",
       })
         .then((response) => response.text())
-        // .then((text) => console.log(text))
         .catch((error) =>
           console.error(`Error with deleteProduct function : ${error}`)
         );
     }
   };
 
-  submitEdit = (id, editName, editPrice, closeModal) => {
-    // console.log("id: ", id);
-    // console.log("editName: ", editName);
-    // console.log("editPrice: ", editPrice);
-
+  editProduct = (id, editName, editPrice, closeModal) => {
     const { products } = this.state;
 
     const stateProducts = [...products];
@@ -109,7 +102,7 @@ class App extends Component {
 
     const filterEdit = stateProducts.map((product) => {
       if (id === product.product_id) {
-        // This object copies the properties of every product and replaces the values of the properties from editDetails
+        // This object clones the product that satisfies the condition above and assigns the corresponding property values from 'editDetails'.
         return {
           ...product,
           ...editDetails,
@@ -117,8 +110,6 @@ class App extends Component {
       }
       return product;
     });
-
-    // console.log(filterEdit);
 
     this.setState({ products: filterEdit });
 
@@ -133,7 +124,7 @@ class App extends Component {
     })
       .then((response) => response.text())
       .catch((error) =>
-        console.error(`Error with onSubmitEdit function : ${error}`)
+        console.error(`Error with editProduct function : ${error}`)
       )
       .then(closeModal);
   };
@@ -143,13 +134,10 @@ class App extends Component {
     this.setState({
       product: { ...product, [e.target.name]: e.target.value },
     });
-    // console.log("State product: ", product);
   };
 
   render() {
     const { products, product } = this.state;
-
-    // console.log(products);
 
     return (
       <div className="App">
@@ -161,7 +149,7 @@ class App extends Component {
                 products={products}
                 deleteProduct={this.deleteProduct}
                 getProducts={this.getProducts}
-                submitEdit={this.submitEdit}
+                editProduct={this.editProduct}
               />
               <ProductForm
                 addProduct={this.addProduct}
