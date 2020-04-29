@@ -1,14 +1,24 @@
 import React, { Component } from "react";
+import Table from "./components/Table/Table.js";
+import ProductForm from "./components/Form/ProductForm.js";
 import "./App.css";
 
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Col from "react-bootstrap/Col";
+
 class App extends Component {
-  state = {
-    products: [],
-    product: {
-      name: "sample product",
-      price: 20
-    }
-  };
+  constructor() {
+    super();
+    this.state = {
+      products: [],
+      product: {
+        id: null,
+        name: "",
+        price: "",
+      },
+    };
+  }
 
   componentDidMount() {
     this.getProducts();
@@ -17,25 +27,113 @@ class App extends Component {
   // This function fetches data from the server then stores it in the state "products"
   getProducts = () => {
     fetch("http://localhost:4000/products")
-      .then(response => response.json())
-      .then(response => this.setState({ products: response.dataBaby }))
-      // .then(data => console.log(data)) Testing whether data is fetched
-      .catch(err => console.error(err));
+      .then((response) => {
+        return response.json();
+      })
+      .then((response) => {
+        const jsonData = response.dataBaby;
+
+        this.setState({ products: jsonData });
+      })
+      .catch((err) => console.error("Error with fetching GET: ", err));
   };
 
-  renderProduct = ({ product_id, name, price }) => (
-    <div key={product_id}>
-      {name} {price}
-    </div>
-  );
+  addProduct = (e) => {
+    e.preventDefault();
 
-  addProduct = () => {
     const { product } = this.state;
-    fetch(
-      `http://localhost:4000/products/add?name=${product.name}&price=${product.price}`
-    )
-      .then(this.getProducts)
-      .catch(err => console.error(err));
+
+    const addDetails = {
+      id: product.product_id,
+      name: product.name,
+      price: product.price,
+    };
+
+    console.log(addDetails);
+
+    const postData = new URLSearchParams(addDetails);
+
+    fetch("http://localhost:4000/products/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: postData,
+    })
+      .then((response) => response.text())
+      .catch((error) =>
+        console.error(`Error with addProduct function : ${error}`)
+      )
+      .then(
+        // this.setState({ products: [...this.state.products, { ...addDetails }] })
+        this.getProducts()
+      );
+  };
+
+  deleteProduct = (id, e) => {
+    const { products } = this.state;
+
+    const updateProducts = products.filter(
+      (product, i, arr) => product.product_id !== id
+    );
+
+    if (window.confirm("Are you sure?")) {
+      this.setState({ products: updateProducts });
+
+      fetch(`http://localhost:4000/products/${id}`, {
+        method: "DELETE",
+      })
+        .then((response) => response.text())
+        .catch((error) =>
+          console.error(`Error with deleteProduct function : ${error}`)
+        );
+    }
+  };
+
+  editProduct = (id, editName, editPrice, closeModal) => {
+    const { products } = this.state;
+
+    const stateProducts = [...products];
+
+    const editDetails = {
+      name: editName,
+      price: editPrice,
+    };
+
+    const filterEdit = stateProducts.map((product) => {
+      if (id === product.product_id) {
+        // This object clones the product that satisfies the condition above and assigns the corresponding property values from 'editDetails'.
+        return {
+          ...product,
+          ...editDetails,
+        };
+      }
+      return product;
+    });
+
+    this.setState({ products: filterEdit });
+
+    const putData = new URLSearchParams(editDetails);
+
+    fetch(`http://localhost:4000/products/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: putData,
+    })
+      .then((response) => response.text())
+      .catch((error) =>
+        console.error(`Error with editProduct function : ${error}`)
+      )
+      .then(closeModal);
+  };
+
+  handleChange = (e) => {
+    const { product } = this.state;
+    this.setState({
+      product: { ...product, [e.target.name]: e.target.value },
+    });
   };
 
   render() {
@@ -43,22 +141,25 @@ class App extends Component {
 
     return (
       <div className="App">
-        {products.map(this.renderProduct)}
-        <div>
-          <input
-            value={product.name}
-            onChange={e =>
-              this.setState({ product: { ...product, name: e.target.value } })
-            }
-          />
-          <input
-            value={product.price}
-            onChange={e =>
-              this.setState({ product: { ...product, price: e.target.value } })
-            }
-          />
-          <button onClick={this.addProduct}>Add product</button>
-        </div>
+        <Container>
+          <Row>
+            <Col></Col>
+            <Col xs={8}>
+              <Table
+                products={products}
+                deleteProduct={this.deleteProduct}
+                getProducts={this.getProducts}
+                editProduct={this.editProduct}
+              />
+              <ProductForm
+                addProduct={this.addProduct}
+                handleChange={this.handleChange}
+                product={product}
+              />
+            </Col>
+            <Col></Col>
+          </Row>
+        </Container>
       </div>
     );
   }
