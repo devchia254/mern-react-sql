@@ -37,7 +37,9 @@ function Table(props) {
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>{products.map(renderProducts)}</tbody>
+      {/* <tbody>{products.map(renderProducts)}</tbody> */}
+      {/* Reversing the order of the mapping array */}
+      <tbody>{products.slice(0).reverse().map(renderProducts)}</tbody>
     </DarkTable>
   );
 }

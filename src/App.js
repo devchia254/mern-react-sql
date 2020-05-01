@@ -142,15 +142,9 @@ class App extends Component {
     return (
       <div className="App">
         <Container>
-          <Row>
+          <Row style={{ margin: "2em 0 2em 0" }}>
             <Col></Col>
-            <Col xs={8}>
-              <Table
-                products={products}
-                deleteProduct={this.deleteProduct}
-                getProducts={this.getProducts}
-                editProduct={this.editProduct}
-              />
+            <Col xs={10}>
               <ProductForm
                 addProduct={this.addProduct}
                 handleChange={this.handleChange}
@@ -158,6 +152,14 @@ class App extends Component {
               />
             </Col>
             <Col></Col>
+          </Row>
+          <Row>
+            <Table
+              products={products}
+              deleteProduct={this.deleteProduct}
+              getProducts={this.getProducts}
+              editProduct={this.editProduct}
+            />
           </Row>
         </Container>
       </div>

@@ -42,7 +42,7 @@ class EditModal extends Component {
     const { modalProduct } = this.state;
 
     return (
-      <div>
+      <React.Fragment>
         <Button variant="primary" onClick={this.openModal}>
           Edit
         </Button>
@@ -67,7 +67,7 @@ class EditModal extends Component {
             </Button>
           </Modal.Footer>
         </Modal>
-      </div>
+      </React.Fragment>
     );
   }
 }
