@@ -7,7 +7,10 @@ function ProductForm(props) {
   const { addProduct, handleChange, product } = props;
 
   return (
-    <Form onSubmit={addProduct}>
+    <Form
+      style={{ marginTop: "2em", marginBottom: "2em" }}
+      onSubmit={addProduct}
+    >
       <Form.Row>
         <Form.Group as={Col}>
           {/* <Form.Label>Product name:</Form.Label> */}

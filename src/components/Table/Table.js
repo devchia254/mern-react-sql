@@ -8,6 +8,9 @@ import Button from "react-bootstrap/Button";
 function Table(props) {
   const { products, deleteProduct, editProduct } = props;
 
+  // Make each product added from the top of the table, instead of the bottom
+  const reversedProducts = products.reverse();
+
   const renderProducts = ({ product_id, name, price }, row_no) => (
     <tr key={product_id}>
       <td>{row_no + 1}</td>
@@ -37,7 +40,7 @@ function Table(props) {
           <th>Action</th>
         </tr>
       </thead>
-      <tbody>{products.map(renderProducts)}</tbody>
+      <tbody>{reversedProducts.map(renderProducts)}</tbody>
     </DarkTable>
   );
 }

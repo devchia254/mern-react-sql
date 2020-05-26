@@ -13,31 +13,32 @@ class App extends Component {
     this.state = {
       products: [],
       product: {
-        id: null,
+        id: null, // id is generated from DB, not from form
         name: "",
         price: "",
       },
     };
   }
 
+  // Render upon viewing
   componentDidMount() {
     this.getProducts();
   }
 
-  // This function fetches data from the server then stores it in the state "products"
+  // Fetches all data (from server and stores in the state - products)
   getProducts = () => {
     fetch("http://localhost:4000/products")
       .then((response) => {
         return response.json();
       })
       .then((response) => {
-        const jsonData = response.dataBaby;
-
-        this.setState({ products: jsonData });
+        const jsonArr = response.dataBaby;
+        this.setState({ products: jsonArr });
       })
       .catch((err) => console.error("Error with fetching GET: ", err));
   };
 
+  // Add product (to server then triggers getProducts function)
   addProduct = (e) => {
     e.preventDefault();
 
@@ -70,6 +71,7 @@ class App extends Component {
       );
   };
 
+  // Delete Product
   deleteProduct = (id, e) => {
     const { products } = this.state;
 
@@ -90,6 +92,7 @@ class App extends Component {
     }
   };
 
+  // Edit Product
   editProduct = (id, editName, editPrice, closeModal) => {
     const { products } = this.state;
 
@@ -129,6 +132,7 @@ class App extends Component {
       .then(closeModal);
   };
 
+  // onChange handler (enable form input based on "name" attr)
   handleChange = (e) => {
     const { product } = this.state;
     this.setState({
@@ -145,16 +149,16 @@ class App extends Component {
           <Row>
             <Col></Col>
             <Col xs={8}>
+              <ProductForm
+                addProduct={this.addProduct}
+                handleChange={this.handleChange}
+                product={product}
+              />
               <Table
                 products={products}
                 deleteProduct={this.deleteProduct}
                 getProducts={this.getProducts}
                 editProduct={this.editProduct}
-              />
-              <ProductForm
-                addProduct={this.addProduct}
-                handleChange={this.handleChange}
-                product={product}
               />
             </Col>
             <Col></Col>
